@@ -1,0 +1,31 @@
+FROM python:latest
+
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+WORKDIR /app
+
+RUN apt-get update \
+    && apt-get install -y netcat-openbsd \
+    && apt-get install -y --no-install-recommends gcc
+
+COPY ../backend/requirements.txt .
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY ../backend .
+
+COPY ./compose/dev/wait-for-it.sh /wait-for-it.sh
+RUN chmod +x /wait-for-it.sh
+
+COPY ./compose/dev/entrypoint.sh /entrypoint.sh
+# Make the script executable (if you haven't done this manually)
+RUN chmod +x /entrypoint.sh
+
+# Use entrypoint.sh as the entrypoint
+ENTRYPOINT ["/entrypoint.sh"]
+
+# RUN python manage.py collectstatic --noinput
+
+EXPOSE 8000
+# CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000"]

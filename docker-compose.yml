@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: compose/dev/Dockerfile_backend
+    command: >
+      /wait-for-it.sh db 5432 -- /entrypoint.sh
+    volumes:
+      - ./backend:/app
+      - ./backend/netflix:/app/netflix
+      - netflix_static_volume:/app/staticfiles
+      - netflix_media_volume:/app/media
+    env_file:
+      - .env_api
+    environment:
+      - DEBUG=1
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    networks:
+      - backend_network
+
+
+  frontend:
+    build:
+      context: .
+      dockerfile: compose/dev/Dockerfile_frontend
+    volumes:
+      - ./frontend/netflix:/app
+      - netflix_static_volume:/app/staticfiles
+      - netflix_media_volume:/app/media
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - REACT_APP_PROD=false
+
+  db:
+    image: postgres:latest
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: netflix
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    networks:
+      - backend_network
+
+volumes:
+  netflix_static_volume:
+  netflix_media_volume:
+  postgres_data:
+
+
+networks:
+  backend_network:
+    driver: bridge

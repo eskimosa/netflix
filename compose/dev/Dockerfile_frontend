@@ -1,0 +1,13 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+COPY ../frontend/netflix/package.json ../frontend/netflix/yarn.lock ./
+
+RUN yarn install
+
+COPY ../frontend/netflix .
+
+EXPOSE 3000
+
+CMD ["yarn", "start"]
