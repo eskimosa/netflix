@@ -5,3 +5,9 @@ djangorestframework==3.15.2
 pillow==11.0.0
 sqlparse==0.5.1
 psycopg2
+django-filter==24.3
+requests
+django-extensions
+pdb
+
+

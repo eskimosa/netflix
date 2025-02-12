@@ -8,6 +8,8 @@ media/      # Media files uploaded by users
 staticfiles/ # Static files collected via Django's collectstatic command
 .env_api        # Environment variables file
 
+.env_api
+
 # Node.js/React (frontend)
 node_modules/
 npm-debug.log

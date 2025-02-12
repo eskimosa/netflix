@@ -23,7 +23,6 @@ services:
     networks:
       - backend_network
 
-
   frontend:
     build:
       context: .
@@ -55,7 +54,6 @@ volumes:
   netflix_static_volume:
   netflix_media_volume:
   postgres_data:
-
 
 networks:
   backend_network:
