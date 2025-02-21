@@ -8,6 +8,6 @@ psycopg2
 django-filter==24.3
 requests
 django-extensions
-pdb
+
 
 
