@@ -1,27 +1,28 @@
 from rest_framework import serializers
-from ..models import PopularMovie, TrendingMovie, UpcomingMovie, TopRatedMovie
+from ..models import MovieBase, PopularMovie, TrendingMovie, UpcomingMovie, TopRatedMovie
 
 
-class TopRatedMovieSerializer(serializers.ModelSerializer):
+class MovieBaseSerializer(serializers.ModelSerializer):
     class Meta:
+        model = MovieBase
+        fields = '__all__'
+
+
+class TopRatedMovieSerializer(MovieBaseSerializer):
+    class Meta(MovieBaseSerializer.Meta):
         model = TopRatedMovie
-        fields = '__all__'
 
 
-class PopularMovieSerializer(serializers.ModelSerializer):
-    class Meta:
+class PopularMovieSerializer(MovieBaseSerializer):
+    class Meta(MovieBaseSerializer.Meta):
         model = PopularMovie
-        fields = '__all__'
 
 
-class TrendingMovieSerializer(serializers.ModelSerializer):
-    class Meta:
+class TrendingMovieSerializer(MovieBaseSerializer):
+    class Meta(MovieBaseSerializer.Meta):
         model = TrendingMovie
-        fields = '__all__'
 
 
-class UpcomingMovieSerializer(serializers.ModelSerializer):
-    class Meta:
+class UpcomingMovieSerializer(MovieBaseSerializer):
+    class Meta(MovieBaseSerializer.Meta):
         model = UpcomingMovie
-        fields = '__all__'
-

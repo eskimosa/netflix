@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class MovieBase(models.Model):
@@ -31,3 +32,16 @@ class TrendingMovie(MovieBase):
 
 class UpcomingMovie(MovieBase):
     pass
+
+
+class UserMovieList(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    movie_id = models.IntegerField()  # Store movie's unique tmdb_id
+    movie_type = models.CharField(max_length=255)  # Specify the movie type ('TopRatedMovie', 'PopularMovie', etc.)
+
+    class Meta:
+        unique_together = ('user', 'movie_id', 'movie_type')  # Prevent the same movie from being added twice by the
+        # same user
+
+    def __str__(self):
+        return f'{self.user.username} - {self.movie_type} - {self.movie_id}'
