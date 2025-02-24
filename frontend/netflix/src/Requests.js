@@ -1,11 +1,13 @@
-const key = '1f2af6b2d576ca12e9918b023952b2ff';
+import baseUrl from "./components/shared/baseUrl";
+
+const key = 'YOUR_API_KEY';
 
 const requests = {
-    requestPopular: `https://api.themoviedb.org/3/movie/popular?api_key=${key}&language=en-US&page=1`,
-    requestTrending: `https://api.themoviedb.org/3/trending/movie/day?api_key=${key}&language=en-US&page=2`,
+    requestPopular: `${baseUrl}/api/list_popular/`,
+    requestTrending: `${baseUrl}/api/list_trending/`,
     requestHorror: `https://api.themoviedb.org/3/discover/movie?api_key=${key}&with_genres=27&language=en-US&page=1&include_adult=false`,
-    requestUpcoming: `https://api.themoviedb.org/3/movie/upcoming?api_key=${key}&language=en-US&page=1`,
-    requestTopRated: `https://api.themoviedb.org/3/movie/top_rated?api_key=${key}&language=en-US&page=2`,
+    requestUpcoming: `${baseUrl}/api/list_upcoming/`,
+    requestTopRated: `${baseUrl}/api/list_top_rated/`,
 };
 
 export default requests;

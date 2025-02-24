@@ -9,7 +9,7 @@ const Main = () => {
   // Fetching movies from the API
   useEffect(() => {
     axios
-      .get(`${baseUrl}/api/movies/`)
+      .get(`${baseUrl}/api/list_popular/`)
       .then((response) => {
         setMovies(response.data);
         setLoading(false);
@@ -39,8 +39,6 @@ const Main = () => {
       return str;
     }
   };
-
-  console.log(movie);
 
   return (
     <div className="w-full h-[800px] text-white">
