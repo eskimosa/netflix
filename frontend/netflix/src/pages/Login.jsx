@@ -3,24 +3,29 @@ import { Link, useNavigate } from "react-router-dom";
 import baseUrl from "../components/shared/baseUrl";
 import axios from "axios";
 
+
 const Login = () => {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${baseUrl}/auth/token/`, {
-        email: email,
-        password: password,
-      });
+        const response = await axios.post(`${baseUrl}/auth/login/`, {
+            username: username,
+            password: password,
+        });
+        
+        localStorage.setItem("access_token", response.data.access);
+        localStorage.setItem("refresh_token", response.data.refresh);
+        localStorage.setItem("username", username);
 
-      navigate("/");
+        navigate("/");
     } catch (error) {
-      console.error(error.response.data);
+        console.error(error.response.data);
     }
-  };
+};
 
   return (
     <>
@@ -38,13 +43,15 @@ const Login = () => {
               <form className="w-full flex flex-col py-4">
                 <input
                   className="p-3 my-2 bg-gray-700 rounded"
-                  onChange={(e) => setEmail(e.target.value)}
-                  type="email"
-                  placeholder="Email"
-                  autoComplete="email"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  type="username"
+                  placeholder="username"
+                  autoComplete="username"
                 />
                 <input
                   className="p-3 my-2 bg-gray-700 rounded"
+                  value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   type="password"
                   placeholder="Password"

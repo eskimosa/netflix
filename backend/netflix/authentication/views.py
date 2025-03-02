@@ -1,104 +1,64 @@
+from django.contrib.auth import get_user_model
 from rest_framework import viewsets
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
-from .serializer import UserMovieListSerializer, UserRegistrationSerializer
+from .serializer import UserMovieListSerializer, UserSerializer
 from ..categories.serializers import MovieBaseSerializer
 from ..models import UserMovieList, TopRatedMovie, TrendingMovie, UpcomingMovie, PopularMovie
 
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-)
 
-class CustomTokenObtainPairView(TokenObtainPairView):
-    def post(self, request, *args, **kwargs):
+class SignupView(APIView):
+    authentication_classes = []
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            refresh = RefreshToken.for_user(user)
+            return Response({'refresh': str(refresh), 'access': str(refresh.access_token), 'user': serializer.data})
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class LoginView(APIView):
+    authentication_classes = []
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        user = get_object_or_404(User, username=request.data['username'])
+        if not user.check_password(request.data['password']):
+            return Response({'detail': 'Invalid credentials.'}, status=status.HTTP_401_UNAUTHORIZED)
+        refresh = RefreshToken.for_user(user)
+        return Response({'refresh': str(refresh), 'access': str(refresh.access_token)})
+
+
+class LogoutView(APIView):
+    permission_classes = [AllowAny]
+    def post(self, request):
         try:
-            response = super().post(request, *args, **kwargs)
-            tokens = response.data
-
-            access_token = tokens['access']
-            refresh_token = tokens['refresh']
-
-            res = Response()
-
-            res.data = {'success': True}
-
-            res.set_cookie(
-                key='access_token',
-                value=access_token,
-                httponly=True,
-                secure=True,
-                samesite='None',
-                path='/'
-            )
-
-            res.set_cookie(
-                key='refresh_token',
-                value=refresh_token,
-                httponly=True,
-                secure=True,
-                samesite='None',
-                path='/'
-            )
-
-            return res
-
-        except:
-            return Response({'success': False})
+            refresh_token = request.data['refresh']
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response({'detail': 'Successfully logged out.'}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class CustomRefreshTokenView(TokenRefreshView):
-    def post(self, request, *args, **kwargs):
-        try:
-            refresh_token = request.COOKIES.get('refresh_token')
-            request.data['refresh'] = refresh_token
+class ProfileView(APIView):
+    permission_classes = [IsAuthenticated]
 
-            response = super().post(request, *args, **kwargs)
-
-            tokens = response.data
-
-            access_token = tokens['access']
-
-            res = Response()
-
-            res.data = {'refreshed': True}
-
-            res.set_cookie(
-                key='access_token',
-                value=access_token,
-                httponly=True,
-                secure=True,
-                samesite='None',
-                path='/'
-            )
-
-            return res
-        except:
-            return Response({'refreshed': False})
-
-
-@api_view(['POST'])
-def logout(request):
-    try:
-        res = Response()
-        res.data = {'success': True}
-        res.delete_cookie('access_token', path='/', samesite='None')
-        res.delete_cookie('refresh_token', path='/', samesite='None')
-        return res
-    except:
-        return Response({'success': False})
-
-
-@api_view(['POST'])
-@permission_classes([AllowAny])
-def register(request):
-    serializer = UserRegistrationSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=201)
-    return Response(serializer.errors, status=400)
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        serializer = UserSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class UserMovieListViewSet(viewsets.ModelViewSet):

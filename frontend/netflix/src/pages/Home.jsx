@@ -5,6 +5,7 @@ import baseUrl from "../components/shared/baseUrl";
 import requests from "../Requests";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 
 const Home = () => {
@@ -13,7 +14,17 @@ const Home = () => {
   const [upcoming, setUpcoming] = useState([]);
   const [popular, setPopular] = useState([]);
   const [horror, setHorror] = useState([]);
+  const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const navigate = useNavigate();
+
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('access_token');
+    setIsAuthenticated(!!token);
+  }, []);
 
   const key = "YOUR_API_KEY";
 
@@ -22,7 +33,7 @@ const Home = () => {
       try {
         // Fetch trending movies
         const trendingResponse = await axios.get(
-          `${baseUrl}/api/list_trending/`
+          requests.requestTrending
         );
         setTrending(trendingResponse.data);
 
@@ -46,6 +57,15 @@ const Home = () => {
         );
         setHorror(horrorResponse.data.results);
 
+        
+        if (isAuthenticated) {
+          const favoritesResponse = await axios.get(
+            `${baseUrl}/api/list_popular/`
+          );
+          setFavorites(favoritesResponse.data);
+        }
+        
+
         setLoading(false);
       } catch (error) {
         console.error("Error fetching movie data:", error);
@@ -54,7 +74,7 @@ const Home = () => {
     };
 
     fetchMovieData();
-  }, []);
+  }, [isAuthenticated]);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -63,11 +83,14 @@ const Home = () => {
   return (
     <>
       <Main />
-      <Row rowID="1" title="Top Rated" movies={topRated} />
-      <Row rowID="2" title="UpComing" movies={upcoming} />
-      <Row rowID="3" title="Popular" movies={popular} />
-      <Row rowID="4" title="Trending" movies={trending} />
-      <Row rowID="5" title="Horror" movies={horror} />
+      {isAuthenticated && (
+        <Row rowID="1" title="Favorites" movies={favorites} />
+      )}
+      <Row rowID="2" title="Top Rated" movies={topRated} />
+      <Row rowID="3" title="UpComing" movies={upcoming} />
+      <Row rowID="4" title="Popular" movies={popular} />
+      <Row rowID="5" title="Trending" movies={trending} />
+      <Row rowID="6" title="Horror" movies={horror} />
     </>
   );
 };
