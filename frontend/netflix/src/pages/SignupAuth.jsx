@@ -8,12 +8,19 @@ const SignupAuth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   const handleSignup = async (e) => {
     e.preventDefault();
-    await signup(username, email, password, password2);
-    navigate("/");
+    setError("");
+
+    const response = await signup(username, email, password, password2);
+    if (response && response.errorMessage) {
+      setError(response.errorMessage);
+    } else {
+      navigate("/");
+    }
   };
 
   return (
@@ -29,6 +36,7 @@ const SignupAuth = () => {
           <div className="max-w-[450px] h-[600px] mx-auto bg-black/75 text-white">
             <div className="max-w-[320px] mx-auto py-16">
               <h1 className="text-3xl font-bold">Sign Up</h1>
+              {error ? <p className="p-3 bg-red-400 my-2">{error}</p> : null}
               <form className="w-full flex flex-col py-4">
                 <input
                   className="p-3 my-2 bg-gray-700 rounded"

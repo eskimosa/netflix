@@ -50,13 +50,13 @@ api.interceptors.response.use(
           console.error("Token refresh failed:", refreshError);
           localStorage.removeItem("access_token");
           localStorage.removeItem("refresh_token");
-          window.location.href = "/login";
+          // window.location.href = "/login";
         }
       } else {
         // If no refresh token, or refresh fails, redirect to login
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
-        window.location.href = "/login";
+        // window.location.href = "/login";
       }
     }
 

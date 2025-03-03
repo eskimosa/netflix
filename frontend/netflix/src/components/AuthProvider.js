@@ -10,6 +10,7 @@ export function useAuth() {
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const login = async (username, password) => {
     try {
@@ -17,6 +18,7 @@ export function AuthProvider({ children }) {
         username,
         password,
       });
+
       const token = response.data.access; // JWT token from backend response
 
       localStorage.setItem("token", token);
@@ -24,8 +26,20 @@ export function AuthProvider({ children }) {
       // Decode JWT to extract user information if needed
       const userInfo = parseJwt(token);
       setUser(userInfo);
+      return response;
     } catch (error) {
       console.error("Login failed:", error);
+      if (error.response) {
+        // If there's a response (error from the backend)
+        return {
+          errorMessage: error.response.data.detail || "An error occurred.",
+        };
+      } else if (error.request) {
+        // If there's no response (network error)
+        return { errorMessage: "Network error, please try again later." };
+      } else {
+        return { errorMessage: "An unexpected error occurred." };
+      }
     }
   };
 
@@ -43,8 +57,16 @@ export function AuthProvider({ children }) {
 
       const userInfo = parseJwt(token);
       setUser(userInfo);
+      return response;
     } catch (error) {
-      console.error("Login failed:", error);
+      console.error("Signup failed:", error);
+      if (error.response) {
+        return { errorMessage: error.response.data.detail || "An error occurred." };
+      } else if (error.request) {
+        return { errorMessage: "Network error, please try again later." };
+      } else {
+        return { errorMessage: "An unexpected error occurred." };
+      }
     }
   };
 
@@ -89,7 +111,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, signup, login, logout }}>
+    <AuthContext.Provider value={{ user, signup, login, logout, error }}>
       {!loading && children}
     </AuthContext.Provider>
   );

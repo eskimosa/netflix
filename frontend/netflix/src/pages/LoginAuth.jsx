@@ -12,11 +12,14 @@ const LoginAuth = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    try {
-      await login(username, password);
+    setError(""); // Reset error state before attempting login
+
+    const response = await login(username, password);
+
+    if (response && response.errorMessage) {
+      setError(response.errorMessage);
+    } else {
       navigate("/");
-    } catch (err) {
-      setError("Login failed. Please try again.");
     }
   };
 
@@ -33,6 +36,7 @@ const LoginAuth = () => {
           <div className="max-w-[450px] h-[600px] mx-auto bg-black/75 text-white">
             <div className="max-w-[320px] mx-auto py-16">
               <h1 className="text-3xl font-bold">Sign In</h1>
+              {error ? <p className="p-3 bg-red-400 my-2">{error}</p> : null}
               <form className="w-full flex flex-col py-4">
                 <input
                   className="p-3 my-2 bg-gray-700 rounded"
