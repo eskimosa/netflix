@@ -8,6 +8,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../components/AuthProvider";
 import api from "../components/axiosConfig";
+import SavedShows from "../components/SavedShows";
 
 const HomeAuth = () => {
   const { user } = useAuth();
@@ -40,7 +41,7 @@ const HomeAuth = () => {
         setPopular(popularResponse.data);
 
         if (user) {
-          const favoritesResponse = await api.get("/api/list_popular/");
+          const favoritesResponse = await api.get("/auth/user/list_movies/");
           setFavorites(favoritesResponse.data);
         }
 

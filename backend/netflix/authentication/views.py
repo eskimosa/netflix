@@ -127,12 +127,11 @@ class UserMovieListViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['delete'])
     def remove_movie(self, request, pk=None):
-        movie_id = request.data.get['movie_id']
-        movie_type = request.data.get['movie_type']
+        movie_id = request.data.get('movie_id')
         user = request.user
 
         try:
-            user_movie = UserMovieList.objects.get(user=user, movie_id=movie_id, movie_type=movie_type)
+            user_movie = UserMovieList.objects.get(user=user, movie_id=movie_id)
             user_movie.delete()
             return Response({'status': 'Movie removed from your list'}, status=204)
         except UserMovieList.DoesNotExist:
