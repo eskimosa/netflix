@@ -82,6 +82,11 @@ CORS_ALLOWED_ORIGINS = os.environ.get('DJANGO_CORS_ALLOWED_ORIGINS', 'http://loc
 
 CORS_ALLOW_CREDENTIALS = True
 
+CORS_ALLOW_HEADERS = [
+    'authorization',
+    'content-type',
+]
+
 ROOT_URLCONF = 'backend.urls'
 
 SIMPLE_JWT = {

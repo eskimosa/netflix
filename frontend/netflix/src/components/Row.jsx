@@ -4,27 +4,9 @@ import Movie from "./Movie";
 import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 
 const Row = ({ title, movies, rowID }) => {
-  /*  const [movies, setMovies] = useState([]);
+  /* 
   const [loading, setLoading] = useState(true);
-
-/*   useEffect(() => {
-    console.log("fetchURL:", fetchURL);
-    axios
-      .get(fetchURL)
-      .then((response) => {
-        console.log("response.data:", response.data);
-        if (response.data?.results) {
-          setMovies(response.data.results);
-        } else {
-          console.error("No results found.");
-        }
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching movies:", error);
-        setLoading(false);
-      });
-  }, [fetchURL]); */
+*/
 
   const slideLeft = () => {
     var slider = document.getElementById("slider" + rowID);

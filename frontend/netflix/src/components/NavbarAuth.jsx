@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../components/AuthProvider";
+import { useAuth } from "./AuthProvider";
 
 const NavbarAuth = () => {
   const { user, logout } = useAuth();
@@ -24,14 +24,15 @@ const NavbarAuth = () => {
       <div>
         {user ? (
           <>
-            <button className="text-white pr-4" onClick={handleLogout}>
+            <Link to="/account">
+              <button className=" text-white pr-4">Account</button>
+            </Link>
+            <button
+              className="bg-red-600 px-6 py-2 rounded cursor-pointer text-white"
+              onClick={handleLogout}
+            >
               Logout
             </button>
-            <Link to="/account">
-              <button className="bg-red-600 px-6 py-2 rounded cursor-pointer text-white">
-                Account
-              </button>
-            </Link>
           </>
         ) : (
           <>

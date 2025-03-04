@@ -76,29 +76,54 @@ class ProfileView(APIView):
 
 
 class UserMovieListViewSet(viewsets.ModelViewSet):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     serializer_class = UserMovieListSerializer
 
     def get_queryset(self):
         return UserMovieList.objects.filter(user=self.request.user)
 
-    @action(detail=True, methods=['post'])
-    def add_movie(self, request, pk=None):
+    @action(detail=False, methods=['post'])
+    def add_movie(self, request):
         movie_id = request.data.get('movie_id')
-        movie_type = request.data.get('movie_type')
         user = request.user
 
-        if movie_type not in ['TopRatedMovie', 'PopularMovie', 'TrendingMovie']:
-            return Response({'status': 'Invalid movie type'}, status=400)
+        movie = None
+        movie_type = None
 
-        user_movie, created = UserMovieList.objects.get_or_create(
-            user=user, movie_id=movie_id, movie_type=movie_type
-        )
+        if TopRatedMovie.objects.filter(tmdb_id=movie_id).exists():
+            movie_type = 'TopRatedMovie'
+            movie = TopRatedMovie.objects.get(tmdb_id=movie_id)
+        elif PopularMovie.objects.filter(tmdb_id=movie_id).exists():
+            movie_type = 'PopularMovie'
+            movie = PopularMovie.objects.get(tmdb_id=movie_id)
+        elif TrendingMovie.objects.filter(tmdb_id=movie_id).exists():
+            movie_type = 'TrendingMovie'
+            movie = TrendingMovie.objects.get(tmdb_id=movie_id)
+        elif UpcomingMovie.objects.filter(tmdb_id=movie_id).exists():
+            movie_type = 'UpcomingMovie'
+            movie = UpcomingMovie.objects.get(tmdb_id=movie_id)
 
-        if created:
-            return Response({'status': 'Movie added to your list'}, status=201)
+        if movie:
+            user_movie, created = UserMovieList.objects.get_or_create(
+                user=user,
+                movie_id=movie_id,
+                movie_type=movie_type,
+                defaults={
+                    'title': movie.title,
+                    'description': movie.description,
+                    'release_date': movie.release_date,
+                    'rating': movie.rating,
+                    'poster_path': movie.poster_path,
+                    'category': movie.category
+                }
+            )
+
+            if created:
+                return Response({'status': 'Movie added to your list'}, status=201)
+            else:
+                return Response({'status': 'Movie already in your list'}, status=200)
         else:
-            return Response({'status': 'Movie already in your list'}, status=200)
+            return Response({'status': 'Movie not found'}, status=404)
 
     @action(detail=True, methods=['delete'])
     def remove_movie(self, request, pk=None):
@@ -114,24 +139,8 @@ class UserMovieListViewSet(viewsets.ModelViewSet):
             return Response({'status': 'Movie not found in your list'}, status=404)
 
     @action(detail=False, methods=['get'])
-    def my_movies(self, request):
+    def list_movies(self, request):
         user = request.user
         movie_list = UserMovieList.objects.filter(user=user)
-
-        movies = []
-        for entry in movie_list:
-            movie = None
-            if entry.movie_type == 'TopRatedMovie':
-                movie = TopRatedMovie.objects.get(tmdb_id=entry.movie_id)
-            elif entry.movie_type == 'PopularMovie':
-                movie = PopularMovie.objects.get(tmdb_id=entry.movie_id)
-            elif entry.movie_type == 'TrendingMovie':
-                movie = TrendingMovie.objects.get(tmdb_id=entry.movie_id)
-            elif entry.movie_type == 'UpcomingMovie':
-                movie = UpcomingMovie.objects.get(tmdb_id=entry.movie_id)
-
-            if movie:
-                movies.append(movie)
-
-        serializer = MovieBaseSerializer(movies, many=True)
+        serializer = UserMovieListSerializer(movie_list, many=True)
         return Response(serializer.data)

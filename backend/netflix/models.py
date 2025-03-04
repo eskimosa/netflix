@@ -36,8 +36,14 @@ class UpcomingMovie(MovieBase):
 
 class UserMovieList(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    movie_id = models.IntegerField()  # Store movie's unique tmdb_id
-    movie_type = models.CharField(max_length=255)  # Specify the movie type ('TopRatedMovie', 'PopularMovie', etc.)
+    movie_id = models.IntegerField()  # Store the movie's unique tmdb_id
+    movie_type = models.CharField(max_length=255)  # Specify the movie type ('TopRatedMovie', etc.)
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    release_date = models.DateField()
+    rating = models.FloatField()
+    poster_path = models.URLField(max_length=500)
+    category = models.CharField(max_length=255)
 
     class Meta:
         unique_together = ('user', 'movie_id', 'movie_type')  # Prevent the same movie from being added twice by the

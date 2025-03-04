@@ -21,6 +21,8 @@ const HomeAuth = () => {
 
   const navigate = useNavigate();
 
+  console.log('Current user: ', user);
+
 
   useEffect(() => {
     const fetchMovieData = async () => {
@@ -36,9 +38,6 @@ const HomeAuth = () => {
 
         const popularResponse = await axios.get(requests.requestPopular);
         setPopular(popularResponse.data);
-
-        const horrorResponse = await axios.get(requests.requestHorror);
-        setHorror(horrorResponse.data.results);
 
         if (user) {
           const favoritesResponse = await api.get("/api/list_popular/");

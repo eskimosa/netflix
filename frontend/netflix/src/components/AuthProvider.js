@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext, createContext } from "react";
-import axiosInstance from "./axiosConfig";
+import api from "./axiosConfig";
 
 const AuthContext = createContext();
 
@@ -14,14 +14,14 @@ export function AuthProvider({ children }) {
 
   const login = async (username, password) => {
     try {
-      const response = await axiosInstance.post("/auth/login/", {
+      const response = await api.post("/auth/login/", {
         username,
         password,
       });
 
       const token = response.data.access; // JWT token from backend response
 
-      localStorage.setItem("token", token);
+      localStorage.setItem("access_token", token);
 
       // Decode JWT to extract user information if needed
       const userInfo = parseJwt(token);
@@ -45,7 +45,7 @@ export function AuthProvider({ children }) {
 
   const signup = async (username, email, password, password2) => {
     try {
-      const response = await axiosInstance.post("/auth/signup/", {
+      const response = await api.post("/auth/signup/", {
         username,
         email,
         password,
@@ -53,7 +53,7 @@ export function AuthProvider({ children }) {
       });
       const token = response.data.access;
 
-      localStorage.setItem("token", token);
+      localStorage.setItem("access_token", token);
 
       const userInfo = parseJwt(token);
       setUser(userInfo);
@@ -72,13 +72,13 @@ export function AuthProvider({ children }) {
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem("token");
+    localStorage.removeItem("access_token");
   };
 
   // Auto-login on app start (if token exists in localStorage)
   useEffect(() => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("access_token");
       if (token) {
         const userInfo = parseJwt(token);
         setUser(userInfo);

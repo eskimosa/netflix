@@ -11,5 +11,5 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('user/add_movie/', UserMovieListViewSet.as_view({'post': 'add_movie'}), name='user_add_movie'),
     path('user/remove_movie/', UserMovieListViewSet.as_view({'delete': 'remove_movie'}), name='user_remove_movie'),
-    path('user/list_movies/', UserMovieListViewSet.as_view({'get': 'my_movies'}), name='user_list_movies'),
+    path('user/list_movies/', UserMovieListViewSet.as_view({'get': 'list_movies'}), name='user_list_movies'),
 ]

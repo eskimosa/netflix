@@ -26,8 +26,6 @@ const Home = () => {
     setIsAuthenticated(!!token);
   }, []);
 
-  const key = "YOUR_API_KEY";
-
   useEffect(() => {
     const fetchMovieData = async () => {
       try {
@@ -51,11 +49,6 @@ const Home = () => {
 
         const popularResponse = await axios.get(`${baseUrl}/api/list_popular/`);
         setPopular(popularResponse.data);
-
-        const horrorResponse = await axios.get(
-          `https://api.themoviedb.org/3/discover/movie?api_key=${key}&with_genres=27&language=en-US&page=1&include_adult=false`
-        );
-        setHorror(horrorResponse.data.results);
 
         
         if (isAuthenticated) {

@@ -1,5 +1,6 @@
 import os
 
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -15,9 +16,12 @@ popular = 'https://api.themoviedb.org/3/movie/popular?api_key={key}&language=en-
 trending = 'https://api.themoviedb.org/3/trending/movie/day?api_key={key}&language=en-US&page=4'
 top_rated = 'https://api.themoviedb.org/3/movie/top_rated?api_key={key}&language=en-US&page=4'
 upcoming = 'https://api.themoviedb.org/3/movie/upcoming?api_key={key}&language=en-US&page=4'
+horror = ('https://api.themoviedb.org/3/discover/movie?api_key={'
+          'key}&with_genres=27&language=en-US&page=1&include_adult=false')
 
 
 class MovieParserAPIView(APIView):
+    permission_classes = [AllowAny]
     def get(self, request):
         try:
             popular_plugin = PopularPlugin(url=popular.format(key=API_KEY), model=PopularMovie)
