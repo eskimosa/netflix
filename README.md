@@ -2,7 +2,9 @@ Intro
 --
 
 This Netflix clone is built using Django REST Framework on the backend and React.js on the frontend, fetching data from a third-party API and storing each category in a dedicated PostgreSQL database, ensuring efficient data management.
-User authentication is managed with Django and JWT for secure login and session handling. On the frontend, a custom AuthProvider and useAuth() hook handle session management, storing the JWT securely and dynamically updating the app’s state to protect routes and maintain user sessions.
+
+User authentication is managed with Django and JWT for secure login and session handling.
+On the frontend, a custom AuthProvider and useAuth() hook handle session management, storing the JWT securely and dynamically updating the app’s state to protect routes and maintain user sessions.
 
 The entire project is fully Dockerized, simplifying deployment and scaling for production environments.
 
