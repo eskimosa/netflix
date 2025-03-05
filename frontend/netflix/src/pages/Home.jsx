@@ -1,63 +1,42 @@
 import React from "react";
 import Main from "../components/Main";
 import Row from "../components/Row";
-import baseUrl from "../components/shared/baseUrl";
 import requests from "../Requests";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-
+import { useAuth } from "../components/AuthProvider";
+import api from "../components/axiosConfig";
 
 const Home = () => {
+  const { user } = useAuth();
   const [trending, setTrending] = useState([]);
   const [topRated, setTopRated] = useState([]);
   const [upcoming, setUpcoming] = useState([]);
   const [popular, setPopular] = useState([]);
-  const [horror, setHorror] = useState([]);
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const navigate = useNavigate();
 
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  useEffect(() => {
-    const token = localStorage.getItem('access_token');
-    setIsAuthenticated(!!token);
-  }, []);
 
   useEffect(() => {
     const fetchMovieData = async () => {
       try {
-        // Fetch trending movies
-        const trendingResponse = await axios.get(
-          requests.requestTrending
-        );
+        const trendingResponse = await axios.get(requests.requestTrending);
         setTrending(trendingResponse.data);
 
-        // Fetch top-rated movies
-        const topRatedResponse = await axios.get(
-          `${baseUrl}/api/list_top_rated/`
-        );
+        const topRatedResponse = await axios.get(requests.requestTopRated);
         setTopRated(topRatedResponse.data);
 
-        // Fetch upcoming movies
-        const upcomingResponse = await axios.get(
-          `${baseUrl}/api/list_upcoming/`
-        );
+        const upcomingResponse = await axios.get(requests.requestUpcoming);
         setUpcoming(upcomingResponse.data);
 
-        const popularResponse = await axios.get(`${baseUrl}/api/list_popular/`);
+        const popularResponse = await axios.get(requests.requestPopular);
         setPopular(popularResponse.data);
 
-        
-        if (isAuthenticated) {
-          const favoritesResponse = await axios.get(
-            `${baseUrl}/api/list_popular/`
-          );
+        if (user) {
+          const favoritesResponse = await api.get("/auth/user/list_movies/");
           setFavorites(favoritesResponse.data);
         }
-        
 
         setLoading(false);
       } catch (error) {
@@ -67,7 +46,9 @@ const Home = () => {
     };
 
     fetchMovieData();
-  }, [isAuthenticated]);
+  }, [user]);
+
+  
 
   if (loading) {
     return <div>Loading...</div>;
@@ -76,14 +57,11 @@ const Home = () => {
   return (
     <>
       <Main />
-      {isAuthenticated && (
-        <Row rowID="1" title="Favorites" movies={favorites} />
-      )}
+      {user && <Row rowID="1" title="Favorites" movies={favorites}/>}
       <Row rowID="2" title="Top Rated" movies={topRated} />
       <Row rowID="3" title="UpComing" movies={upcoming} />
       <Row rowID="4" title="Popular" movies={popular} />
       <Row rowID="5" title="Trending" movies={trending} />
-      <Row rowID="6" title="Horror" movies={horror} />
     </>
   );
 };

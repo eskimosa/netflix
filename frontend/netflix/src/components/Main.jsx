@@ -6,7 +6,6 @@ const Main = () => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetching movies from the API
   useEffect(() => {
     axios
       .get(`${baseUrl}/api/list_popular/`)

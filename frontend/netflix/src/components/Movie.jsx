@@ -23,28 +23,18 @@ const Movie = ({ item }) => {
         movie_id: item.tmdb_id,
       };
 
-      // Log the data that will be sent to the backend
-      console.log("Data being sent to the backend:", movieData);
-      console.log(
-        "Authorization Header:",
-        `Bearer ${localStorage.getItem("access_token")}`
-      );
-
       try {
         const response = await axios.post(
           `${baseUrl}/auth/user/add_movie/`,
           movieData,
           {
             headers: {
-              'Authorization': `Bearer ${localStorage.getItem("access_token")}`,
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
             },
           }
-          
         );
-        
-
         if (response.status === 201 || response.status === 200) {
-          console.log(response.data.status); // Handle success messages here
+          console.log(response.data.status);
         }
       } catch (error) {
         console.error("Error saving the movie to your list:", error);

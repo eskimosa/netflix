@@ -1,12 +1,8 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React from "react";
 import Movie from "./Movie";
 import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 
 const Row = ({ title, movies, rowID }) => {
-  /* 
-  const [loading, setLoading] = useState(true);
-*/
 
   const slideLeft = () => {
     var slider = document.getElementById("slider" + rowID);
@@ -18,9 +14,6 @@ const Row = ({ title, movies, rowID }) => {
     slider.scrollLeft = slider.scrollLeft + 500;
   };
 
-  /*   if (loading) {
-    return <div>Loading...</div>;
-  } */
 
   return (
     <>

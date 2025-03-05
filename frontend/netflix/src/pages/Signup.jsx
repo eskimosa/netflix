@@ -1,46 +1,27 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import baseUrl from "../components/shared/baseUrl";
-import axios from "axios";
+import { useAuth } from "../components/AuthProvider";
 
 const Signup = () => {
+  const { signup } = useAuth();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   const handleSignup = async (e) => {
     e.preventDefault();
-        if (password !== password2) {
-            alert('Passwords do not match');
-            return;
-        }
-        console.log('Submitting sign-up form with data:', { username, email, password, password2 });
-        try {
-            const response = await axios.post(`${baseUrl}/auth/signup/`, {
-                username: username,
-                password: password,
-                password2: password2,
-                email: email,
-            });
-            await axios.post(`${baseUrl}/auth/login/`, {
-                username: username,
-                password: password,
-        });
+    setError("");
 
-        localStorage.setItem('access_token', response.data.access);
-        localStorage.setItem('refresh_token', response.data.refresh);
-        localStorage.setItem("username", username);
-
-        setPassword('');
-        setPassword2('');
-
-        navigate('/');
-        } catch (error) {
-            console.error(error.response.data);
-        }
-    };
+    const response = await signup(username, email, password, password2);
+    if (response && response.errorMessage) {
+      setError(response.errorMessage);
+    } else {
+      navigate("/");
+    }
+  };
 
   return (
     <>
@@ -55,6 +36,7 @@ const Signup = () => {
           <div className="max-w-[450px] h-[600px] mx-auto bg-black/75 text-white">
             <div className="max-w-[320px] mx-auto py-16">
               <h1 className="text-3xl font-bold">Sign Up</h1>
+              {error ? <p className="p-3 bg-red-400 my-2">{error}</p> : null}
               <form className="w-full flex flex-col py-4">
                 <input
                   className="p-3 my-2 bg-gray-700 rounded"
@@ -84,8 +66,8 @@ const Signup = () => {
                   className="p-3 my-2 bg-gray-700 rounded"
                   value={password2}
                   onChange={(e) => setPassword2(e.target.value)}
-                  type="password2"
-                  placeholder="Repeat Password"
+                  type="password"
+                  placeholder="Confirm Password"
                   autoComplete="current-password"
                 />
                 <button
